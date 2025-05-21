@@ -8,22 +8,8 @@ trigger:
 - main
 
 pool:
-  name: 'kshitijaAgent'
- 
-variables:
-  buildConfiguration: 'Release'
+  vmImage: 'ubuntu-latest'   # ✅ This uses Microsoft-hosted agent
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '**/*.csproj'
-    feedsToUse: 'config'
-    nugetConfigPath: 'nuget.config'
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+- script: echo "✅ Hello, your pipeline is running using Microsoft-hosted agent"
+  displayName: "Run echo command"
