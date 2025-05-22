@@ -5,11 +5,32 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- main
+- main  # or your branch name
 
 pool:
-  name: Default   
+  name: Default   # 🧠 Use your self-hosted agent pool name
+
+variables:
+  buildConfiguration: 'Release'
 
 steps:
-- script: echo "✅ Self-hosted agent pipeline is working"
-  displayName: "Run echo command"
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '7.0.x'   # ✅ Change if your project uses another version
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- script: dotnet restore
+  displayName: '🔧 Restore dependencies'
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: '🏗️ Build the project'
+
+- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+  displayName: '🚀 Publish the project'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'published_output'
+    publishLocation: 'Container'
